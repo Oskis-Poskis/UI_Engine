@@ -1,6 +1,6 @@
 {
-  "width": 1751,
-  "height": 961,
+  "width": 1713,
+  "height": 894,
   "positionx": 547,
   "positiony": 290,
   "maximized": false

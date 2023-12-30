@@ -23,7 +23,7 @@ namespace UI
             frames = new List<Frame>
             {
                 frame1,
-                // frame2,
+                frame2,
                 // frame3
             };
 
