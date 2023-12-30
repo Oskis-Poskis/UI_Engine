@@ -35,7 +35,7 @@ namespace UI
             window_s.SetFloat("HeaderHeight",  header_height);
         }
 
-        public static void Render()
+        public static void RenderFrames()
         {
             any_window_hovered = false;
             
