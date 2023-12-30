@@ -42,7 +42,8 @@ namespace UI
                 error = FT.FT_Load_Char(face, c, FT.FT_LOAD_RENDER);
                 if (error != FT_Error.FT_Err_Ok) Console.WriteLine("A Freetype Error Occured, failed to load glyph: " + error.ToString());
 
-                FT.FT_Render_Glyph((nint)face_facade.GlyphSlot, FT_Render_Mode.FT_RENDER_MODE_SDF);
+                // Enable SDF rendering
+                //FT.FT_Render_Glyph((nint)face_facade.GlyphSlot, FT_Render_Mode.FT_RENDER_MODE_SDF);
                 
                 int texture = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, texture);

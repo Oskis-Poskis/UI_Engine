@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\OpenTK_Template\OpenTK-Template.csproj" />
-    <ProjectReference Include="..\..\FreeTypeSharp\FreeTypeSharp\FreeTypeSharp.csproj" />
+    <ProjectReference Include="..\FreeTypeSharp\FreeTypeSharp\FreeTypeSharp.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
