@@ -1,0 +1,7 @@
+{
+  "width": 1751,
+  "height": 961,
+  "positionx": 547,
+  "positiony": 290,
+  "maximized": false
+}
