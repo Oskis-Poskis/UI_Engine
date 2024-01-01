@@ -20,14 +20,15 @@ namespace Engine
     {
         public AppWindow(NativeWindowSettings settings, bool UseWindowState) : base(settings, UseWindowState)
         {
-            window_s = new Shader($"{base_directory}Resources/Shaders/window.vert", $"{base_directory}Resources/Shaders/window.frag");
-            text_s = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
+            window_s = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/window.frag");
+            image_s  = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/image.frag");
+            text_s   = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
         }
 
         PolygonMode draw_mode = PolygonMode.Fill;
         
         public static StatCounter stats = new();
-        public static Shader window_s, text_s;
+        public static Shader window_s, text_s, image_s;
 
         public static Vector2 cursor_pos;
         public static bool left_down, left_press;
@@ -89,12 +90,12 @@ namespace Engine
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
+            GL.ClearColor(Color4.Chartreuse);
             GL.PolygonMode(MaterialFace.FrontAndBack, draw_mode);
 
             FrameManager.RenderFrames();
 
-            TextManager.Render("Hello, World!", 15, 15, 2.0f, Vector3.One);
+            TextManager.Render("0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 15, 15, 1.0f, Vector3.One);
             TextManager.Render($"vendor: {GL.GetString(StringName.Vendor)}", 15, window_size.Y - font_pixel_size, 0.55f, new Vector3(1.0f));
             TextManager.Render($"video-memory: {stats.free_video_memory:0.00}/{stats.total_video_memory:0.00}", 15, window_size.Y - font_pixel_size * 1.75f, 0.55f, new Vector3(1.0f));
             TextManager.Render($"FPS: {stats.fps:0.0}", 15, window_size.Y - font_pixel_size * 3.25f, 0.55f, new Vector3(1.0f));

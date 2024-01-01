@@ -43,7 +43,7 @@ public static class Config
 
     public static readonly float margin         = 8;
     public static readonly float border_radius  = 8;
-    public static readonly float border_width   = 2;
+    public static readonly float border_width   = 3;
 
     public static readonly float header_height  = 25;
     public static readonly uint font_pixel_size = 32;

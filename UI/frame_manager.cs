@@ -20,11 +20,13 @@ namespace UI
             frame2 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 2");
             frame3 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 3");
 
+            frame1.AddComponent(new ImageComponent());
+
             frames = new List<Frame>
             {
                 frame1,
                 frame2,
-                // frame3
+                frame3
             };
 
             window_s.Use();

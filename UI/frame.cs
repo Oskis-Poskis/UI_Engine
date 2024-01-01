@@ -7,6 +7,7 @@ using WindowTemplate.Common;
 
 using static Config;
 using static Engine.AppWindow;
+using System.Runtime.CompilerServices;
 
 namespace UI
 {
@@ -16,6 +17,8 @@ namespace UI
         private int VAO, VBO;
         private float[] frame_verts;
         public bool is_resizing = false, is_moving = false;
+
+        List<FrameComponent> components;
         
         public HoverType hover_type;
         public InteractionType frame_interaction = InteractionType.None;
@@ -40,10 +43,12 @@ namespace UI
 
             VBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, frame_verts.Length * sizeof(float), frame_verts.ToArray(), BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, frame_verts.Length * sizeof(float), frame_verts, BufferUsageHint.DynamicDraw);
 
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
+
+            components = new List<FrameComponent>();
         }
 
         private void LoadSavedData()
@@ -51,7 +56,7 @@ namespace UI
             
         }
 
-        float scaling = 0.6f;
+        float scaling = 0.5f;
         public void Render()
         {
             // Render UI background
@@ -60,18 +65,25 @@ namespace UI
             window_s.SetVector4("PosAndSize", pos_and_size);
             window_s.SetVector4("DoRoundCorner", rounded_corner);
             GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
-            GL.BindVertexArray(0);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+
+            foreach (FrameComponent component in components)
+            {
+                component.Render(new Vector4(
+                    top_left.X, top_left.Y - HelperClass.MapRange(header_height, 0.0f, HostWindow.window_size.Y, -1.0f, 1.0f),
+                    bottom_right.X, bottom_right.Y));
+            }
 
             // Render Text
             text_s.Use();
             TextManager.Render(
                 title,
-                HelperClass.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + (header_height - font_pixel_size * scaling) / 2.0f,
-                HelperClass.MapRange(top_left.Y, -1.0f, 1.0f, 0.0f, HostWindow.window_size.Y) -  header_height + (header_height - font_pixel_size * scaling) / 2.0f,
+                HelperClass.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + (font_pixel_size * scaling) / 2.0f,
+                HelperClass.MapRange(top_left.Y, -1.0f, 1.0f, 0.0f, HostWindow.window_size.Y) - header_height + (header_height - font_pixel_size * scaling) / 2.0f,
                 scaling,
                 new Vector3(1.0f)
             );
+
         }
 
         float offsetx, offsety;
@@ -272,17 +284,19 @@ namespace UI
         {
             frame_verts = new float[]
             {
+                top_left.X,     bottom_right.Y,
                 top_left.X,     top_left.Y,
                 bottom_right.X, top_left.Y,
-                bottom_right.X, bottom_right.Y,
                 top_left.X,     bottom_right.Y,
+                bottom_right.X, top_left.Y,
+                bottom_right.X, bottom_right.Y,
             };
         }
 
         public void UpdateBuffer()
         {
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferSubData(BufferTarget.ArrayBuffer, 0, frame_verts.Length * sizeof(float), frame_verts.ToArray());
+            GL.BufferSubData(BufferTarget.ArrayBuffer, 0, frame_verts.Length * sizeof(float), frame_verts);
         }
 
         public bool IsFrameHovered()
@@ -318,6 +332,11 @@ namespace UI
         {
             return cursor_pos.X > TopLeft.X && cursor_pos.X < BottomRight.X &&
                    cursor_pos.Y < TopLeft.Y && cursor_pos.Y > BottomRight.Y;
+        }
+
+        public void AddComponent(FrameComponent component)
+        {
+            components.Add(component);
         }
     }
 }
