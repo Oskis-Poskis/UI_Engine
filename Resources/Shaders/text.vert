@@ -2,6 +2,7 @@
 layout (location = 0) in vec4 vertex;
 out vec2 TexCoords;
 
+uniform float depth;
 uniform mat4 projection;
 
 void main()

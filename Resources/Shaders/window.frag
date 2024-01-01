@@ -52,5 +52,5 @@ void main()
     vec3 color = mix(HeaderColor, FrameColor, header_bar);
     color = mix(BorderColor, color, borders);
 
-    gl_FragColor = vec4(color, mask); // mix(FrameColor, BorderColor, bw)
+    gl_FragColor = vec4(color, mask);
 }

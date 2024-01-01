@@ -3,11 +3,10 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using WindowTemplate;
-using WindowTemplate.Common;
 
 using static Config;
+using static UI.FrameManager;
 using static Engine.AppWindow;
-using System.Runtime.CompilerServices;
 
 namespace UI
 {
@@ -15,7 +14,7 @@ namespace UI
     {
         public string title = "Funny title teehee";
         private int VAO, VBO;
-        private float[] frame_verts;
+        private float[] frame_verts = new float[8];
         public bool is_resizing = false, is_moving = false;
 
         List<FrameComponent> components;
@@ -43,7 +42,7 @@ namespace UI
 
             VBO = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, frame_verts.Length * sizeof(float), frame_verts, BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, 8 * sizeof(float), frame_verts, BufferUsageHint.DynamicDraw);
 
             GL.EnableVertexAttribArray(0);
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
@@ -56,44 +55,61 @@ namespace UI
             
         }
 
-        float scaling = 0.5f;
+        float text_scaling = 0.5f;
         public void Render()
         {
-            // Render UI background
+            // Render Frame
             window_s.Use();
-            window_s.SetVector3("FrameColor", FrameManager.active_window == FrameManager.frames.IndexOf(this) ? selected_frame_color : frame_color);
+            window_s.SetVector3("FrameColor", FrameManager.active_window == frames.IndexOf(this) ? selected_frame_color : header_color);
             window_s.SetVector4("PosAndSize", pos_and_size);
             window_s.SetVector4("DoRoundCorner", rounded_corner);
             GL.BindVertexArray(VAO);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
-
+            GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
+    
+            // Render Frame Components
             foreach (FrameComponent component in components)
             {
-                component.Render(new Vector4(
-                    top_left.X, top_left.Y - HelperClass.MapRange(header_height, 0.0f, HostWindow.window_size.Y, -1.0f, 1.0f),
-                    bottom_right.X, bottom_right.Y));
+                switch (component.type)
+                {
+                    case ComponentType.Image:
+                        image_s.Use();
+                        image_s.SetVector4("PosAndSize", pos_and_size);
+                        image_s.SetVector4("DoRoundCorner", rounded_corner);
+                        
+                        component.Render(new Vector4(
+                            top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc,
+                            bottom_right.X - border_width_x_dc, bottom_right.Y + border_width_y_dc)
+                        );
+                        break;
+
+                    case ComponentType.Button:
+                        component.Render(new Vector4(
+                            top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc,
+                            bottom_right.X - border_width_x_dc, bottom_right.Y + border_width_y_dc)
+                        );
+                        break;
+                };
             }
 
             // Render Text
             text_s.Use();
             TextManager.Render(
                 title,
-                HelperClass.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + (font_pixel_size * scaling) / 2.0f,
-                HelperClass.MapRange(top_left.Y, -1.0f, 1.0f, 0.0f, HostWindow.window_size.Y) - header_height + (header_height - font_pixel_size * scaling) / 2.0f,
-                scaling,
+                MathHelper.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + (font_pixel_size * text_scaling) / 2.0f,
+                MathHelper.MapRange(top_left.Y, -1.0f, 1.0f, 0.0f, HostWindow.window_size.Y) - header_height + (header_height - font_pixel_size * text_scaling) / 2.0f,
+                text_scaling,
                 new Vector3(1.0f)
             );
-
-        }
+        }        
 
         float offsetx, offsety;
         Vector4 StoredPosition;
         public void CheckInteraction()
         {
-            // Move Window
+            // Header
             if ((RectHoverCheck(
                 new Vector2(top_left.X,     top_left.Y - margin_y_dc),
-                new Vector2(bottom_right.X, top_left.Y - HelperClass.MapRange(header_height, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f))) |
+                new Vector2(bottom_right.X, top_left.Y - MathHelper.MapRange(header_height, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f))) |
                 frame_interaction == InteractionType.Move && !is_resizing) | (HostWindow.keyboard_state.IsKeyDown(Keys.LeftAlt) && IsFrameHovered()))
             {
                 hover_type = HoverType.Move;
@@ -227,7 +243,7 @@ namespace UI
                 }
                 if (left_down && is_resizing)
                 {
-                    top_left.Y = MathHelper.Clamp(cursor_pos.Y - offsety, bottom_right.Y + HelperClass.MapRange(header_height, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f), 1.0f);
+                    top_left.Y = MathHelper.Clamp(cursor_pos.Y - offsety, bottom_right.Y + MathHelper.MapRange(header_height, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f), 1.0f);
                     CreateFrameData();
                     UpdateBuffer();
 
@@ -253,7 +269,7 @@ namespace UI
                 }
                 if (left_down && is_resizing)
                 {
-                    bottom_right.Y = MathHelper.Clamp(cursor_pos.Y - offsety, -1.0f, top_left.Y - HelperClass.MapRange(header_height, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f));
+                    bottom_right.Y = MathHelper.Clamp(cursor_pos.Y - offsety, -1.0f, top_left.Y - header_height_dc - border_width_y_dc / 2.0f);
                     CreateFrameData();
                     UpdateBuffer();
 
@@ -273,8 +289,23 @@ namespace UI
 
         public void Resize()
         {
-            margin_x_dc = HelperClass.MapRange(margin, 0.0f, HostWindow.window_size.X, 0.0f, 2.0f);
-            margin_y_dc = HelperClass.MapRange(margin, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f);
+            margin_x_dc = MathHelper.MapRange(margin, 0.0f, HostWindow.window_size.X, 0.0f, 2.0f);
+            margin_y_dc = MathHelper.MapRange(margin, 0.0f, HostWindow.window_size.Y, 0.0f, 2.0f);
+
+            foreach (FrameComponent component in components)
+            {
+                switch (component.type)
+                {
+                    case ComponentType.Image:
+                        image_s.Use();
+                        image_s.SetVector4("PosAndSize", pos_and_size);
+                        image_s.SetVector4("DoRoundCorner", rounded_corner);
+                        break;
+
+                    case ComponentType.Button:
+                        break;
+                };
+            }
 
             CreateFrameData();
             UpdateBuffer();
@@ -284,12 +315,10 @@ namespace UI
         {
             frame_verts = new float[]
             {
-                top_left.X,     bottom_right.Y,
                 top_left.X,     top_left.Y,
-                bottom_right.X, top_left.Y,
                 top_left.X,     bottom_right.Y,
-                bottom_right.X, top_left.Y,
                 bottom_right.X, bottom_right.Y,
+                bottom_right.X, top_left.Y,
             };
         }
 

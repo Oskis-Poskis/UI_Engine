@@ -10,5 +10,5 @@ void main()
     float d = texture(text, TexCoords).r;
     float aaf = fwidth(d);
     float alpha = smoothstep(0.5 - aaf, 0.5 + aaf, d);
-    color = vec4(textColor, d);
+    color = vec4(textColor, alpha);
 }  

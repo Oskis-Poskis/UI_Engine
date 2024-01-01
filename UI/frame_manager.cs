@@ -1,32 +1,35 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
+using Engine.Common;
 using WindowTemplate;
+using static WindowTemplate.HostWindow;
+
 using static Config;
 using static Engine.AppWindow;
+using OpenTK.Mathematics;
 
 namespace UI
 {
     public class FrameManager
     {
-        private static Frame frame1, frame2, frame3;
-        public  static List<Frame> frames;
-        public  static HoverType hover_type;
-        public  static int active_window;
-        public  static bool any_window_hovered;
+        private static Frame frame1;
+        public static List<Frame> frames;
+        public static HoverType hover_type;
+        public static int active_window;
+        public static bool any_window_hovered;
+        public static float border_width_x_dc, border_width_y_dc;
+        public static float header_height_dc;
 
         public static void Initialize()
         {
             frame1 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 1");
-            frame2 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 2");
-            frame3 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 3");
 
-            frame1.AddComponent(new ImageComponent());
+            Texture testimage = Texture.LoadFromFile($"{base_directory}Resources/Images/rg.png");
+            frame1.AddComponent(new ImageComponent(testimage.Handle));
 
             frames = new List<Frame>
             {
-                frame1,
-                frame2,
-                frame3
+                frame1
             };
 
             window_s.Use();
@@ -35,6 +38,14 @@ namespace UI
             window_s.SetFloat("BorderRadius",  border_radius);
             window_s.SetFloat("BorderWidth",   border_width);
             window_s.SetFloat("HeaderHeight",  header_height);
+
+            image_s.Use();
+            image_s.SetFloat("BorderRadius", border_radius);
+            image_s.SetFloat("BorderWidth",  border_width);
+
+            border_width_x_dc = MathHelper.MapRange(border_width,  0.0f, window_size.X, 0.0f, 2.0f);
+            border_width_y_dc = MathHelper.MapRange(border_width,  0.0f, window_size.Y, 0.0f, 2.0f);
+            header_height_dc  = MathHelper.MapRange(header_height, 0.0f, window_size.Y, 0.0f, 2.0f);
         }
 
         public static void RenderFrames()
@@ -45,7 +56,7 @@ namespace UI
             {
                 if (frame.IsFrameHovered())
                 {
-                    if (HostWindow.mouse_state.IsButtonPressed(MouseButton.Left) && hover_type == HoverType.None) active_window = frames.IndexOf(frame);
+                    if (mouse_state.IsButtonPressed(MouseButton.Left) && hover_type == HoverType.None) active_window = frames.IndexOf(frame);
                     any_window_hovered = true;
                 }
             }
@@ -53,8 +64,8 @@ namespace UI
             frames[active_window].CheckInteraction();
             hover_type = frames[active_window].hover_type;
 
-            frames[active_window].Render();
             foreach (Frame frame in frames) if (frames.IndexOf(frame) != active_window) frame.Render();
+            frames[active_window].Render();
 
             if (!any_window_hovered) hover_type = HoverType.None;
         }
@@ -62,7 +73,14 @@ namespace UI
         public static void Resize()
         {
             window_s.Use();
-            window_s.SetVector2("Resolution", HostWindow.window_size);
+            window_s.SetVector2("Resolution", window_size);
+
+            image_s.Use();
+            image_s.SetVector2("Resolution", window_size);
+
+            border_width_x_dc = MathHelper.MapRange(border_width,  0.0f, window_size.X, 0.0f, 2.0f);
+            border_width_y_dc = MathHelper.MapRange(border_width,  0.0f, window_size.Y, 0.0f, 2.0f);
+            header_height_dc  = MathHelper.MapRange(header_height, 0.0f, window_size.Y, 0.0f, 2.0f);
 
             foreach(Frame frame in frames)
             {

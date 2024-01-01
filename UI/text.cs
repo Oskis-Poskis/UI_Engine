@@ -43,7 +43,7 @@ namespace UI
                 if (error != FT_Error.FT_Err_Ok) Console.WriteLine("A Freetype Error Occured, failed to load glyph: " + error.ToString());
 
                 // Enable SDF rendering
-                //FT.FT_Render_Glyph((nint)face_facade.GlyphSlot, FT_Render_Mode.FT_RENDER_MODE_SDF);
+                FT.FT_Render_Glyph((nint)face_facade.GlyphSlot, FT_Render_Mode.FT_RENDER_MODE_SDF);
                 
                 int texture = GL.GenTexture();
                 GL.BindTexture(TextureTarget.Texture2D, texture);
@@ -95,7 +95,6 @@ namespace UI
         {
             GL.DepthMask(false);
 
-            text_s.Use();
             text_s.SetVector3("textColor", color);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindVertexArray(VAO);
@@ -115,10 +114,7 @@ namespace UI
                     xpos,     ypos + h, 0.0f, 0.0f,
                     xpos,     ypos,     0.0f, 1.0f,
                     xpos + w, ypos,     1.0f, 1.0f,
-
-                    xpos,     ypos + h, 0.0f, 0.0f,
-                    xpos + w, ypos,     1.0f, 1.0f,
-                    xpos + w, ypos + h, 1.0f, 0.0f 
+                    xpos + w, ypos + h, 1.0f, 0.0f
                 };
 
                 GL.BindTexture(TextureTarget.Texture2D, ch.texture_id);
@@ -126,7 +122,7 @@ namespace UI
                 GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
                 GL.BufferSubData(BufferTarget.ArrayBuffer, 0, vertices.Length * sizeof(float), vertices);
 
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+                GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
                 x += ch.advance * scale;
             }
 

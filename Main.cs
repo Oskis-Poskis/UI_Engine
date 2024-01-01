@@ -37,6 +37,7 @@ namespace Engine
         {
             base.OnLoad();
 
+            // Freetype also fixes dll loading
             // DllResolver.InitLoader();
 
             GLFW.SetScrollCallback(WindowPtr, Scrolling);
@@ -44,6 +45,7 @@ namespace Engine
             GL.PointSize(point_size);
 
             GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
@@ -93,14 +95,15 @@ namespace Engine
             GL.ClearColor(Color4.Chartreuse);
             GL.PolygonMode(MaterialFace.FrontAndBack, draw_mode);
 
+            // Render UI
+            GL.Disable(EnableCap.DepthTest);
             FrameManager.RenderFrames();
-
-            TextManager.Render("0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 15, 15, 1.0f, Vector3.One);
             TextManager.Render($"vendor: {GL.GetString(StringName.Vendor)}", 15, window_size.Y - font_pixel_size, 0.55f, new Vector3(1.0f));
-            TextManager.Render($"video-memory: {stats.free_video_memory:0.00}/{stats.total_video_memory:0.00}", 15, window_size.Y - font_pixel_size * 1.75f, 0.55f, new Vector3(1.0f));
-            TextManager.Render($"FPS: {stats.fps:0.0}", 15, window_size.Y - font_pixel_size * 3.25f, 0.55f, new Vector3(1.0f));
-            TextManager.Render($"ms: {stats.ms:0.0}", 15, window_size.Y - font_pixel_size * 4.0f, 0.55f, new Vector3(1.0f));
-    
+            TextManager.Render($"FPS: {stats.fps:0.0}", 15, window_size.Y - font_pixel_size * 2.5f, 0.55f, new Vector3(1.0f));
+            TextManager.Render($"ms: {stats.ms:0.0}", 15, window_size.Y - font_pixel_size * 3.25f, 0.55f, new Vector3(1.0f));
+            TextManager.Render("0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 15, 15, 1.0f, Vector3.One);
+            GL.Enable(EnableCap.DepthTest);
+            
             SwapBuffers();
         }
 
