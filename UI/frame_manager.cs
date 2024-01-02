@@ -1,18 +1,18 @@
+using OpenTK.Mathematics;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
 using Engine.Common;
-using WindowTemplate;
+using static Engine.AppWindow;
 using static WindowTemplate.HostWindow;
 
+using WindowTemplate;
 using static Config;
-using static Engine.AppWindow;
-using OpenTK.Mathematics;
 
 namespace UI
 {
     public class FrameManager
     {
-        private static Frame frame1;
+        private static Frame frame1, frame2;
         public static List<Frame> frames;
         public static HoverType hover_type;
         public static int active_window;
@@ -23,9 +23,15 @@ namespace UI
         public static void Initialize()
         {
             frame1 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 1");
+            frame2 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 2");
 
-            Texture testimage = Texture.LoadFromFile($"{base_directory}Resources/Images/rg.png");
-            frame1.AddComponent(new ImageComponent(testimage.Handle));
+            Texture testimage = Texture.LoadFromFile($"{base_directory}Resources/Images/checkerboard.png", out Vector2 ImageSize);
+            ImageComponent imgcomp = new ImageComponent(testimage.Handle)
+            {
+                aspect_mode = ImageAspectMode.Fill,
+                image_size  = ImageSize
+            };
+            frame1.AddComponent(imgcomp);
 
             frames = new List<Frame>
             {

@@ -1,6 +1,9 @@
+using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
-using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
+
 using StbImageSharp;
+using PixelFormat = OpenTK.Graphics.OpenGL4.PixelFormat;
+using WindowTemplate;
 
 namespace Engine.Common
 {
@@ -8,13 +11,13 @@ namespace Engine.Common
     {
         public readonly int Handle;
 
-        public static Texture LoadFromFile(string path)
+        public static Texture LoadFromFile(string path, out Vector2 ImageSize)
         {
             // Replace path if it's invalid or unsupported file format
             if (!File.Exists(path))
             {
                 Console.WriteLine("Path doesn't exist: " + path);
-                path = "Assets/Resources/failedtoload.png";
+                path = $"{HostWindow.base_directory}Resources/Images/checker.png";
             }
 
             int handle = GL.GenTexture();
@@ -28,6 +31,7 @@ namespace Engine.Common
             {
                 ImageResult image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, image.Data);
+                ImageSize = new Vector2(image.Width, image.Height);
             }
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);

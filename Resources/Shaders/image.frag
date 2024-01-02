@@ -36,5 +36,5 @@ void main()
     float borders = (dist >= -border_width && dist < 0.0) ? 1.0 : 0.0;
     float mask = (dist < 0.0 ? 1.0 : 0.0) - borders;
 
-    color = vec4(texture(image, rel_uvs * 0.5 + 0.5).rgb, mask);
+    color = vec4(texture(image, rel_uvs).rgb, mask);
 }  
