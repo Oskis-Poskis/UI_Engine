@@ -65,7 +65,9 @@ namespace UI
             window_s.SetVector4("DoRoundCorner", rounded_corner);
             GL.BindVertexArray(VAO);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
-    
+
+            float y_offset = 0.0f;
+
             // Render Frame Components
             foreach (FrameComponent component in components)
             {
@@ -73,13 +75,13 @@ namespace UI
                 {
                     case ComponentType.Image:
                         image_s.Use();
-                        image_s.SetVector4("PosAndSize", pos_and_size);
+                        image_s.SetVector4("PosAndSize",    pos_and_size);
                         image_s.SetVector4("DoRoundCorner", rounded_corner);
                         
-                        component.Render(new Vector4(
-                            top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc,
-                            bottom_right.X - border_width_x_dc, bottom_right.Y + border_width_y_dc)
-                        );
+                        y_offset += component.Render(new Vector4(
+                            top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc - y_offset,
+                            bottom_right.X - border_width_x_dc, bottom_right.Y + border_width_y_dc - y_offset)
+                        ).Y;
                         break;
 
                     case ComponentType.Button:
@@ -91,11 +93,11 @@ namespace UI
                 };
             }
 
-            // Render Text
+            // Render Title
             text_s.Use();
             TextManager.Render(
                 title,
-                MathHelper.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + (font_pixel_size * text_scaling) / 2.0f,
+                MathHelper.MapRange(top_left.X, -1.0f, 1.0f, 0.0f, HostWindow.window_size.X) + border_radius,
                 MathHelper.MapRange(top_left.Y, -1.0f, 1.0f, 0.0f, HostWindow.window_size.Y) - header_height + (header_height - font_pixel_size * text_scaling) / 2.0f,
                 text_scaling,
                 new Vector3(1.0f)
@@ -191,7 +193,7 @@ namespace UI
                 }
                 if (left_down && is_resizing)
                 {
-                    top_left.X = MathHelper.Clamp(cursor_pos.X - offsetx, -1.0f, bottom_right.X - margin_x_dc * 2);
+                    top_left.X = MathHelper.Clamp(cursor_pos.X - offsetx, -1.0f, bottom_right.X - margin_x_dc * 2.0f);
                     CreateFrameData();
                     UpdateBuffer();
 

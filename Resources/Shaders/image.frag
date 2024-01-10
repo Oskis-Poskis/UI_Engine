@@ -3,9 +3,9 @@ in vec2 uvs;
 in vec2 rel_uvs;
 out vec4 color;
 
-uniform vec4  PosAndSize;
-uniform vec2  Resolution;
-uniform vec4  DoRoundCorner;
+uniform vec4 PosAndSize;
+uniform vec2 Resolution;
+uniform vec4 DoRoundCorner;
 
 uniform float BorderRadius;
 uniform float BorderWidth;

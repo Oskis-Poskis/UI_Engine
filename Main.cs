@@ -20,15 +20,15 @@ namespace Engine
     {
         public AppWindow(NativeWindowSettings settings, bool UseWindowState) : base(settings, UseWindowState)
         {
-            window_s = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/window.frag");
-            image_s  = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/image.frag");
-            text_s   = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
+            window_s       = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/window.frag");
+            image_s        = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/image.frag");
+            text_s         = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
         }
 
         PolygonMode draw_mode = PolygonMode.Fill;
         
         public static StatCounter stats = new();
-        public static Shader window_s, text_s, image_s;
+        public static Shader window_s, image_s, text_s;
 
         public static Vector2 cursor_pos;
         public static bool left_down, left_press;
@@ -92,16 +92,19 @@ namespace Engine
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(Color4.Chartreuse);
+            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
             GL.PolygonMode(MaterialFace.FrontAndBack, draw_mode);
 
             // Render UI
             GL.Disable(EnableCap.DepthTest);
-            FrameManager.RenderFrames();
             TextManager.Render($"vendor: {GL.GetString(StringName.Vendor)}", 15, window_size.Y - font_pixel_size, 0.55f, new Vector3(1.0f));
             TextManager.Render($"FPS: {stats.fps:0.0}", 15, window_size.Y - font_pixel_size * 2.5f, 0.55f, new Vector3(1.0f));
             TextManager.Render($"ms: {stats.ms:0.0}", 15, window_size.Y - font_pixel_size * 3.25f, 0.55f, new Vector3(1.0f));
-            TextManager.Render("0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~", 15, 15, 1.0f, Vector3.One);
+            for (int i = 0; i < 16; i++)
+            {
+                TextManager.Render("The quick brown fox jumped over the lazy dog", 15, 17 * i + 15, 0.5f, Vector3.One);
+            }
+            FrameManager.RenderFrames();
             GL.Enable(EnableCap.DepthTest);
             
             SwapBuffers();

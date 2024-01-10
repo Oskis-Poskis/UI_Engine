@@ -28,10 +28,13 @@ namespace UI
             Texture testimage = Texture.LoadFromFile($"{base_directory}Resources/Images/checkerboard.png", out Vector2 ImageSize);
             ImageComponent imgcomp = new ImageComponent(testimage.Handle)
             {
-                aspect_mode = ImageAspectMode.Fill,
+                aspect_mode = ImageAspectMode.FillWidth,
                 image_size  = ImageSize
             };
+            
             frame1.AddComponent(imgcomp);
+            // frame2.AddComponent(imgcomp);
+            // frame1.AddComponent(imgcomp);
 
             frames = new List<Frame>
             {
@@ -83,7 +86,7 @@ namespace UI
 
             image_s.Use();
             image_s.SetVector2("Resolution", window_size);
-
+            
             border_width_x_dc = MathHelper.MapRange(border_width,  0.0f, window_size.X, 0.0f, 2.0f);
             border_width_y_dc = MathHelper.MapRange(border_width,  0.0f, window_size.Y, 0.0f, 2.0f);
             header_height_dc  = MathHelper.MapRange(header_height, 0.0f, window_size.Y, 0.0f, 2.0f);

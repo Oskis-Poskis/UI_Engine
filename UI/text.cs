@@ -91,11 +91,12 @@ namespace UI
             GL.BindVertexArray(0);
         }
 
-        public static void Render(string text, float x, float y, float scale, Vector3 color)
+        public static void Render(string text, float x, float y, float scale, Vector3 color, Vector4 bgColor)
         {
             GL.DepthMask(false);
 
             text_s.SetVector3("textColor", color);
+            text_s.SetVector4("backgroundColor", bgColor);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindVertexArray(VAO);
 
@@ -130,6 +131,11 @@ namespace UI
             GL.BindTexture(TextureTarget.Texture2D, 0);
 
             GL.DepthMask(true);
+        }
+
+        public static void Render(string text, float x, float y, float scale, Vector3 color)
+        {
+            Render(text, x, y, scale, color, new Vector4(0.0f));
         }
 
         public static void Resize()
