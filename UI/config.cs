@@ -43,15 +43,16 @@ public static class Config
     public static readonly Vector3 border_color         = new(0.075f);
 
     public static readonly float margin         = 8;
-    public static readonly float border_radius  = 20;
+    public static readonly float border_radius  = 8;
     public static readonly float border_width   = 4;
 
     public static readonly float header_height  = 25;
     public static readonly uint font_pixel_size = 32;
 
-    public static readonly float texteditor_gutter = 35;
-
-
     public static readonly float line_width     = 2;
     public static readonly float point_size     = 8;
+
+    public static readonly float   texteditor_linepadding = 5;
+    public static readonly Vector3 texteditor_bg         = new(0.135f);
+    public static readonly Vector3 texteditor_gutter_bg  = new(0.115f);
 }

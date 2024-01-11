@@ -20,6 +20,7 @@ namespace UI
         public static bool any_frame_hovered;
         public static float border_width_x_dc, border_width_y_dc;
         public static float header_height_dc;
+        public static float font_pixel_size_dc;
 
         public static void Initialize()
         {
@@ -33,7 +34,7 @@ namespace UI
                 image_size  = ImageSize
             };
 
-            TextEditor editor = new();
+            TextEditor editor = new TextEditor();
             
             frame1.AddComponent(imgcomp);
             frame2.AddComponent(editor);
@@ -44,16 +45,22 @@ namespace UI
                 frame2
             };
 
-            window_s.Use();
-            window_s.SetVector3("BorderColor", border_color);
-            window_s.SetVector3("HeaderColor", header_color);
-            window_s.SetFloat("BorderRadius",  border_radius);
-            window_s.SetFloat("BorderWidth",   border_width);
-            window_s.SetFloat("HeaderHeight",  header_height);
+            frame_s.Use();
+            frame_s.SetVector3("BorderColor", border_color);
+            frame_s.SetVector3("HeaderColor", header_color);
+            frame_s.SetFloat("BorderRadius",  border_radius);
+            frame_s.SetFloat("BorderWidth",   border_width);
+            frame_s.SetFloat("HeaderHeight",  header_height);
 
             image_s.Use();
             image_s.SetFloat("BorderRadius", border_radius);
             image_s.SetFloat("BorderWidth",  border_width);
+            
+            texteditor_s.Use();
+            texteditor_s.SetFloat("BorderRadius", border_radius);
+            texteditor_s.SetFloat("BorderWidth",  border_width);
+            texteditor_s.SetVector3("GutterColor", texteditor_gutter_bg);
+            texteditor_s.SetVector3("BackgroundColor", texteditor_bg);
 
             border_width_x_dc = MathHelper.MapRange(border_width,  0.0f, window_size.X, 0.0f, 2.0f);
             border_width_y_dc = MathHelper.MapRange(border_width,  0.0f, window_size.Y, 0.0f, 2.0f);
@@ -68,9 +75,13 @@ namespace UI
             {
                 if (frame.IsFrameHovered())
                 {
-                    if(mouse_state.IsButtonPressed(MouseButton.Left) && hover_type == HoverType.None && !frames[active_frame].IsFrameHovered())
+                    if(mouse_state.IsButtonPressed(MouseButton.Left))
                     {
-                        active_frame = frames.IndexOf(frame);
+                        if(active_frame > -1)
+                        {
+                            if (!frames[active_frame].IsFrameHovered()) active_frame = frames.IndexOf(frame);
+                        }
+                        else active_frame = frames.IndexOf(frame);
                     }
                     any_frame_hovered = true;
                 }
@@ -90,15 +101,19 @@ namespace UI
 
         public static void Resize()
         {
-            window_s.Use();
-            window_s.SetVector2("Resolution", window_size);
+            frame_s.Use();
+            frame_s.SetVector2("Resolution", window_size);
 
             image_s.Use();
             image_s.SetVector2("Resolution", window_size);
+
+            texteditor_s.Use();
+            texteditor_s.SetVector2("Resolution", window_size);
             
             border_width_x_dc = MathHelper.MapRange(border_width,  0.0f, window_size.X, 0.0f, 2.0f);
             border_width_y_dc = MathHelper.MapRange(border_width,  0.0f, window_size.Y, 0.0f, 2.0f);
             header_height_dc  = MathHelper.MapRange(header_height, 0.0f, window_size.Y, 0.0f, 2.0f);
+            font_pixel_size_dc   = MathHelper.MapRange(font_pixel_size, 0.0f, window_size.Y, 0.0f, 2.0f);
 
             foreach(Frame frame in frames)
             {

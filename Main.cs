@@ -20,15 +20,16 @@ namespace Engine
     {
         public AppWindow(NativeWindowSettings settings, bool UseWindowState) : base(settings, UseWindowState)
         {
-            window_s       = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/window.frag");
-            image_s        = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/image.frag");
-            text_s         = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
+            texteditor_s = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/text_editor.frag");
+            image_s      = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/image.frag");
+            frame_s      = new Shader($"{base_directory}Resources/Shaders/base.vert", $"{base_directory}Resources/Shaders/frame.frag");
+            text_s       = new Shader($"{base_directory}Resources/Shaders/text.vert", $"{base_directory}Resources/Shaders/text.frag");
         }
 
         PolygonMode draw_mode = PolygonMode.Fill;
         
         public static StatCounter stats = new();
-        public static Shader window_s, image_s, text_s;
+        public static Shader texteditor_s, frame_s, image_s, text_s;
 
         public static Vector2 cursor_pos;
         public static bool left_down, left_press;
@@ -138,7 +139,16 @@ namespace Engine
         
         private static unsafe void Scrolling(Window* window, double offsetX, double offsetY)
         {
-
+            if (FrameManager.active_frame > -1)
+            {
+                if (FrameManager.frames[FrameManager.active_frame].IsFrameHovered())
+                {
+                    foreach (FrameComponent component in FrameManager.frames[FrameManager.active_frame].components)
+                    {
+                        component.Scroll((float)offsetX,(float)offsetY);
+                    }
+                }
+            }
         }
 
         public static class DllResolver

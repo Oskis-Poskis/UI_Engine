@@ -17,7 +17,7 @@ namespace UI
         private float[] frame_verts = new float[8];
         public bool is_resizing = false, is_moving = false;
 
-        List<FrameComponent> components;
+        public List<FrameComponent> components;
         
         public HoverType hover_type;
         public InteractionType frame_interaction = InteractionType.None;
@@ -59,10 +59,10 @@ namespace UI
         public void Render()
         {
             // Render Frame
-            window_s.Use();
-            window_s.SetVector3("FrameColor", active_frame == frames.IndexOf(this) ? selected_frame_color : header_color);
-            window_s.SetVector4("PosAndSize", pos_and_size);
-            window_s.SetVector4("DoRoundCorner", rounded_corner);
+            frame_s.Use();
+            frame_s.SetVector3("FrameColor", active_frame == frames.IndexOf(this) ? selected_frame_color : header_color);
+            frame_s.SetVector4("PosAndSize", pos_and_size);
+            frame_s.SetVector4("DoRoundCorner", rounded_corner);
             GL.BindVertexArray(VAO);
             GL.DrawArrays(PrimitiveType.TriangleFan, 0, 4);
 
@@ -77,6 +77,17 @@ namespace UI
                         image_s.Use();
                         image_s.SetVector4("PosAndSize",    pos_and_size);
                         image_s.SetVector4("DoRoundCorner", rounded_corner);
+                        
+                        y_offset += component.Render(new Vector4(
+                            top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc - y_offset,
+                            bottom_right.X - border_width_x_dc, bottom_right.Y + border_width_y_dc - y_offset)
+                        ).Y;
+                        break;
+
+                    case ComponentType.TextEditor:
+                        texteditor_s.Use();
+                        texteditor_s.SetVector4("PosAndSize",    pos_and_size);
+                        texteditor_s.SetVector4("DoRoundCorner", rounded_corner);
                         
                         y_offset += component.Render(new Vector4(
                             top_left.X     + border_width_x_dc, top_left.Y     - border_width_y_dc / 2.0f - header_height_dc - y_offset,
