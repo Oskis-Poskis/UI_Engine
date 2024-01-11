@@ -37,7 +37,7 @@ namespace Engine
         {
             base.OnLoad();
 
-            // Freetype also fixes dll loading
+            // Freetype also fixes dll loading, no need for this
             // DllResolver.InitLoader();
 
             GLFW.SetScrollCallback(WindowPtr, Scrolling);
@@ -49,8 +49,8 @@ namespace Engine
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            FrameManager.Initialize();
             TextManager.Initialize();
+            FrameManager.Initialize();
 
             Maximized += (sender) =>
             {
@@ -92,7 +92,7 @@ namespace Engine
             base.OnRenderFrame(args);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+            GL.ClearColor(Color4.Chartreuse);
             GL.PolygonMode(MaterialFace.FrontAndBack, draw_mode);
 
             // Render UI
@@ -100,6 +100,8 @@ namespace Engine
             TextManager.Render($"vendor: {GL.GetString(StringName.Vendor)}", 15, window_size.Y - font_pixel_size, 0.55f, new Vector3(1.0f));
             TextManager.Render($"FPS: {stats.fps:0.0}", 15, window_size.Y - font_pixel_size * 2.5f, 0.55f, new Vector3(1.0f));
             TextManager.Render($"ms: {stats.ms:0.0}", 15, window_size.Y - font_pixel_size * 3.25f, 0.55f, new Vector3(1.0f));
+            TextManager.Render($"active_frame: {FrameManager.active_frame}", 15, window_size.Y - font_pixel_size * 4.75f, 0.55f, new Vector3(1.0f));
+            TextManager.Render($"any_frame_hovered: {FrameManager.any_frame_hovered}", 15, window_size.Y - font_pixel_size * 5.5f, 0.55f, new Vector3(1.0f));
             for (int i = 0; i < 16; i++)
             {
                 TextManager.Render("The quick brown fox jumped over the lazy dog", 15, 17 * i + 15, 0.5f, Vector3.One);

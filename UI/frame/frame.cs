@@ -60,7 +60,7 @@ namespace UI
         {
             // Render Frame
             window_s.Use();
-            window_s.SetVector3("FrameColor", active_window == frames.IndexOf(this) ? selected_frame_color : header_color);
+            window_s.SetVector3("FrameColor", active_frame == frames.IndexOf(this) ? selected_frame_color : header_color);
             window_s.SetVector4("PosAndSize", pos_and_size);
             window_s.SetVector4("DoRoundCorner", rounded_corner);
             GL.BindVertexArray(VAO);
@@ -296,17 +296,7 @@ namespace UI
 
             foreach (FrameComponent component in components)
             {
-                switch (component.type)
-                {
-                    case ComponentType.Image:
-                        image_s.Use();
-                        image_s.SetVector4("PosAndSize", pos_and_size);
-                        image_s.SetVector4("DoRoundCorner", rounded_corner);
-                        break;
-
-                    case ComponentType.Button:
-                        break;
-                };
+                component.HostWindowResize();
             }
 
             CreateFrameData();

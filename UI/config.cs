@@ -1,4 +1,5 @@
 using OpenTK.Mathematics;
+using UI;
 
 public static class Config
 {
@@ -35,18 +36,21 @@ public static class Config
         Move       = 2,
         None       = 3
     }
-
+    
     public static readonly Vector3 selected_frame_color = new(0.15f);
     public static readonly Vector3 frame_color          = new(0.125f);
     public static readonly Vector3 header_color         = new(0.1f);
     public static readonly Vector3 border_color         = new(0.075f);
 
     public static readonly float margin         = 8;
-    public static readonly float border_radius  = 12;
+    public static readonly float border_radius  = 20;
     public static readonly float border_width   = 4;
 
     public static readonly float header_height  = 25;
     public static readonly uint font_pixel_size = 32;
+
+    public static readonly float texteditor_gutter = 35;
+
 
     public static readonly float line_width     = 2;
     public static readonly float point_size     = 8;

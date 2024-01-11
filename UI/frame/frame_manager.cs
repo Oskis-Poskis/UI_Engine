@@ -15,15 +15,16 @@ namespace UI
         private static Frame frame1, frame2;
         public static List<Frame> frames;
         public static HoverType hover_type;
-        public static int active_window;
-        public static bool any_window_hovered;
+
+        public static int active_frame;
+        public static bool any_frame_hovered;
         public static float border_width_x_dc, border_width_y_dc;
         public static float header_height_dc;
 
         public static void Initialize()
         {
-            frame1 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 1");
-            frame2 = new Frame(new(-0.5f, 0.5f), new(0.5f, -0.5f), "Frame 2");
+            frame1 = new Frame(new(-1.0f, 0.5f), new(0.0f, -0.5f), "Frame 1");
+            frame2 = new Frame(new( 0.0f, 0.5f), new(1.0f, -0.5f), "Frame 2");
 
             Texture testimage = Texture.LoadFromFile($"{base_directory}Resources/Images/checkerboard.png", out Vector2 ImageSize);
             ImageComponent imgcomp = new ImageComponent(testimage.Handle)
@@ -31,14 +32,16 @@ namespace UI
                 aspect_mode = ImageAspectMode.FillWidth,
                 image_size  = ImageSize
             };
+
+            TextEditor editor = new();
             
             frame1.AddComponent(imgcomp);
-            // frame2.AddComponent(imgcomp);
-            // frame1.AddComponent(imgcomp);
+            frame2.AddComponent(editor);
 
             frames = new List<Frame>
             {
-                frame1
+                frame1,
+                frame2
             };
 
             window_s.Use();
@@ -59,24 +62,30 @@ namespace UI
 
         public static void RenderFrames()
         {
-            any_window_hovered = false;
+            any_frame_hovered = false;
             
             foreach (Frame frame in frames)
             {
                 if (frame.IsFrameHovered())
                 {
-                    if (mouse_state.IsButtonPressed(MouseButton.Left) && hover_type == HoverType.None) active_window = frames.IndexOf(frame);
-                    any_window_hovered = true;
+                    if(mouse_state.IsButtonPressed(MouseButton.Left) && hover_type == HoverType.None && !frames[active_frame].IsFrameHovered())
+                    {
+                        active_frame = frames.IndexOf(frame);
+                    }
+                    any_frame_hovered = true;
                 }
             }
-            
-            frames[active_window].CheckInteraction();
-            hover_type = frames[active_window].hover_type;
 
-            foreach (Frame frame in frames) if (frames.IndexOf(frame) != active_window) frame.Render();
-            frames[active_window].Render();
+            if (!any_frame_hovered && mouse_state.IsButtonPressed(MouseButton.Left)) active_frame = -1;
 
-            if (!any_window_hovered) hover_type = HoverType.None;
+            foreach (Frame frame in frames) if (frames.IndexOf(frame) != active_frame) frame.Render();
+            if (active_frame > -1)
+            {
+                frames[active_frame].CheckInteraction();
+                hover_type = frames[active_frame].hover_type;
+                frames[active_frame].Render();
+            }
+            else hover_type = HoverType.None;
         }
 
         public static void Resize()
