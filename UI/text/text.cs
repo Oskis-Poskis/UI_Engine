@@ -96,7 +96,6 @@ namespace UI
             GL.DepthMask(false);
 
             text_s.SetVector3("textColor", color);
-            text_s.SetVector4("backgroundColor", bgColor);
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindVertexArray(VAO);
 
